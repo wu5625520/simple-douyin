@@ -3,6 +3,10 @@ package main
 import (
 	"context"
 	"simple-douyin/kitex_gen/videoproto"
+
+	"simple-douyin/cmd/pkg/errno"
+	"simple-douyin/cmd/video/pack"
+	"simple-douyin/cmd/video/service"
 )
 
 // VideoServiceImpl implements the last service interface defined in the IDL.
@@ -11,7 +15,20 @@ type VideoServiceImpl struct{}
 // CreateVideo implements the VideoServiceImpl interface.
 func (s *VideoServiceImpl) CreateVideo(ctx context.Context, req *videoproto.CreateVideoReq) (resp *videoproto.CreateVideoResp, err error) {
 	// TODO: Your code here...
-	return
+	resp = new(videoproto.CreateVideoResp)
+
+	if req.VideoBaseInfo.UserId <= 0 || len(req.VideoBaseInfo.PlayAddr) == 0 || len(req.VideoBaseInfo.CoverAddr) == 0 || len(req.VideoBaseInfo.Title) == 0 {
+		resp.BaseResp = pack.BuildBaseResp(errno.ParamErr)
+		return resp, nil
+	}
+	err = service.NewCreateVideoService(ctx).CreateVideo(req)
+	if err != nil {
+		resp.BaseResp = pack.BuildBaseResp(err)
+		return resp, nil
+	}
+	resp.BaseResp = pack.BuildBaseResp(errno.Success)
+	// 这里是否需要返回video_info?
+	return resp, nil
 }
 
 // GetVideosByUserId implements the VideoServiceImpl interface.
