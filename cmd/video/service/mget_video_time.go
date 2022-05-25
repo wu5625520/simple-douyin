@@ -31,19 +31,19 @@ func (s *MGetVideoByTimeService) MGetVideoByTime(req *videoproto.GetVideosByTime
 	for i := 0; i < len(videos); i++ {
 		vid := videos[i].VideoId
 		uid := videos[i].VideoBaseInfo.UserId
-		likeCount, err := db.GetLikeCount(vid)
+		likeCount, err := db.GetLikeCount(s.ctx, vid)
 		if err != nil {
 			return nil, 0, err
 		}
 		videos[i].LikeCount = likeCount
 
-		commentCount, err := db.GetCommentCount(vid)
+		commentCount, err := db.GetCommentCount(s.ctx, vid)
 		if err != nil {
 			return nil, 0, err
 		}
 		videos[i].CommentCount = commentCount
 		if req.AppUserId != -1 { // 判断是否进行了登陆
-			isFavaorite, err := db.IsFavorite(vid, uid)
+			isFavaorite, err := db.IsFavorite(s.ctx, vid, uid)
 			if err != nil {
 				return nil, 0, err
 			}

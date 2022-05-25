@@ -27,10 +27,10 @@ func NewCreateVideoService(ctx context.Context) *CreateVideoService {
 //
 func (s *CreateVideoService) CreateVideo(req *videoproto.CreateVideoReq) error {
 	VideoModel := &db.Video{
-		UserID:   req.VideoBaseInfo.UserId,
+		UserId:   uint(req.VideoBaseInfo.UserId),
 		Title:    req.VideoBaseInfo.Title,
-		PlayAddr: req.VideoBaseInfo.PlayAddr,
-		CoverUrl: req.VideoBaseInfo.CoverAddr,
+		PlayURL:  req.VideoBaseInfo.PlayAddr,
+		CoverURL: req.VideoBaseInfo.CoverAddr,
 	}
 	// 如果添加失败，返回error
 	return db.CreateVideo(s.ctx, []*db.Video{VideoModel})

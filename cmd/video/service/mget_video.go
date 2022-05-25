@@ -31,19 +31,19 @@ func (s *MGetVideoByUserIdService) MGetVideo(req *videoproto.GetVideosByUserIdRe
 	for i := 0; i < len(videos); i++ {
 		vid := videos[i].VideoId
 		uid := videos[i].VideoBaseInfo.UserId
-		likeCount, err := db.GetLikeCount(vid)
+		likeCount, err := db.GetLikeCount(s.ctx, vid)
 		if err != nil {
 			return nil, err
 		}
 		videos[i].LikeCount = likeCount
 
-		commentCount, err := db.GetCommentCount(vid)
+		commentCount, err := db.GetCommentCount(s.ctx, vid)
 		if err != nil {
 			return nil, err
 		}
 		videos[i].CommentCount = commentCount
 
-		isFavaorite, err := db.IsFavorite(vid, uid)
+		isFavaorite, err := db.IsFavorite(s.ctx, vid, uid)
 		if err != nil {
 			return nil, err
 		}

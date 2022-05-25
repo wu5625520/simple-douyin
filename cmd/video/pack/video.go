@@ -13,12 +13,12 @@ func Video(m *db.Video) *videoproto.VideoInfo {
 
 	return &videoproto.VideoInfo{
 		VideoBaseInfo: &videoproto.VideoBaseInfo{
-			UserId:    m.UserID,
-			PlayAddr:  m.PlayAddr,
-			CoverAddr: m.CoverUrl,
+			UserId:    int64(m.UserId),
+			PlayAddr:  m.PlayURL,
+			CoverAddr: m.CoverURL,
 			Title:     m.Title,
 		},
-		VideoId: m.VideoId,
+		VideoId: int64(m.VideoID),
 	}
 }
 
