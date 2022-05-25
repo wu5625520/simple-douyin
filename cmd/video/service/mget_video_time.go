@@ -1,0 +1,53 @@
+package service
+
+import (
+	"context"
+
+	"simple-douyin/cmd/video/dal/db"
+	"simple-douyin/cmd/video/pack"
+	"simple-douyin/kitex_gen/videoproto"
+)
+
+type MGetVideoByTimeService struct {
+	ctx context.Context
+}
+
+//
+func NewMGetVideoByTimeService(ctx context.Context) *MGetVideoByTimeService {
+	return &MGetVideoByTimeService{ctx: ctx}
+}
+
+// 从DAO层获取视频基本信息，并查出点赞数、评论数、当前用户是否点赞，组装后返回
+func (s *MGetVideoByTimeService) MGetVideoByTime(req *videoproto.GetVideosByTimeReq) ([]*videoproto.VideoInfo, int64, error) {
+	videoModels, nextTime, err := db.MGetVideoByTime(s.ctx, req.LatestTime, req.Count)
+	// 只能得到视频id，uid，title，play_url,cover_url,created_time
+	if err != nil {
+		return nil, 0, err
+	}
+
+	videos := pack.Videos(videoModels) // 类型转换：视频id、base_info已经得到，还需要点赞数、评论数、是否点赞
+
+	// 把视频的其他信息进行绑定
+	for i := 0; i < len(videos); i++ {
+		vid := videos[i].VideoId
+		uid := videos[i].VideoBaseInfo.UserId
+		likeCount, err := db.GetLikeCount(vid)
+		if err != nil {
+			return nil, 0, err
+		}
+		videos[i].LikeCount = likeCount
+
+		commentCount, err := db.GetCommentCount(vid)
+		if err != nil {
+			return nil, 0, err
+		}
+		videos[i].CommentCount = commentCount
+
+		isFavaorite, err := db.IsFavorite(vid, uid)
+		if err != nil {
+			return nil, 0, err
+		}
+		videos[i].IsFavorite = isFavaorite
+	}
+	return videos, nextTime, nil
+}

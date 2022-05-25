@@ -1,0 +1,4 @@
+[ZoneTransfer]
+ZoneId=3
+ReferrerUrl=https://github.com/cloudwego/kitex-examples
+HostUrl=https://codeload.github.com/cloudwego/kitex-examples/zip/refs/heads/main
