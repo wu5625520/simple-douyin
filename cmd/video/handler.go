@@ -51,7 +51,7 @@ func (s *VideoServiceImpl) GetVideosByUserId(ctx context.Context, req *videoprot
 // GetVideosByTime implements the VideoServiceImpl interface.
 func (s *VideoServiceImpl) GetVideosByTime(ctx context.Context, req *videoproto.GetVideosByTimeReq) (resp *videoproto.GetVideosByTimeResp, err error) {
 	resp = new(videoproto.GetVideosByTimeResp)
-	if req.AppUserId < 0 || req.Count > 1000 || req.LatestTime < 0 { // count限制小于1000，避免查询过多数据;时间戳怎么判断？
+	if (req.AppUserId < 0 && req.AppUserId != -1) || req.Count > 1000 || req.LatestTime < 0 { // count限制小于1000，避免查询过多数据;时间戳怎么判断？
 		resp.BaseResp = pack.BuildBaseResp(err)
 		return resp, nil
 	}
@@ -143,7 +143,7 @@ func (s *VideoServiceImpl) GetComments(ctx context.Context, req *videoproto.GetC
 		resp.BaseResp = pack.BuildBaseResp(errno.ParamErr)
 		return resp, nil
 	}
-	comments, err := service.NewGetCommentService(ctx).GetComment(req)
+	comments, err := service.NewMGetCommentService(ctx).MGetComment(req)
 	if err != nil {
 		resp.BaseResp = pack.BuildBaseResp(err)
 		return resp, nil

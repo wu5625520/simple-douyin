@@ -42,12 +42,15 @@ func (s *MGetVideoByTimeService) MGetVideoByTime(req *videoproto.GetVideosByTime
 			return nil, 0, err
 		}
 		videos[i].CommentCount = commentCount
-
-		isFavaorite, err := db.IsFavorite(vid, uid)
-		if err != nil {
-			return nil, 0, err
+		if req.AppUserId != -1 { // 判断是否进行了登陆
+			isFavaorite, err := db.IsFavorite(vid, uid)
+			if err != nil {
+				return nil, 0, err
+			}
+			videos[i].IsFavorite = isFavaorite
+		} else { // 如果没有登陆，则点赞直接返回false
+			videos[i].IsFavorite = false
 		}
-		videos[i].IsFavorite = isFavaorite
 	}
 	return videos, nextTime, nil
 }
